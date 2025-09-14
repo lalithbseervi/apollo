@@ -2,7 +2,17 @@
 
 <!DOCTYPE html>
 <html lang="en" class="dark light">
+    <style>
+        span {
+            font-size: small;
+        }
 
+        mark {
+            background-color: tomato;
+            padding: 0.1em;
+            border-radius: 0.125em;
+        }
+    </style>
     {% include "partials/header.html" %}
 
     <body>
@@ -29,6 +39,10 @@
                 <div class="giscus"></div>
                 {% include "_giscus_script.html" %}
             {% endif %}
+            <footer>
+                <p>Built with ❤️ using <mark><a href="https://getzola.org/" style="text-decoration: underline;">Zola</a></mark> and <mark><a href="https://www.getzola.org/themes/apollo/" style="text-decoration: underline;">Apollo</a></mark></p>
+                <span>&COPY; 2025 Lalith B Seervi</span>
+            </footer>
         </div>
 
         <div class="right-content">
