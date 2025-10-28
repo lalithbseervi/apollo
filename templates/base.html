@@ -2,100 +2,107 @@
 
 <!DOCTYPE html>
 <html lang="en" class="dark light">
-    <style>
-        span {
-            font-size: small;
+<style>
+    span {
+        font-size: small;
+    }
+
+    mark {
+        background-color: tomato;
+        padding: 0.1em;
+        border-radius: 0.125em;
+    }
+
+    /* Mobile-first responsive design */
+    @media (max-width: 768px) {
+        details summary {
+            font-size: 1rem;
+            padding: 6px;
         }
 
-        mark {
-            background-color: tomato;
-            padding: 0.1em;
-            border-radius: 0.125em;
+        .pdf-container iframe {
+            height: 70vh;
+        }
+    }
+
+    /* PWA-specific styles */
+    @media (display-mode: standalone) {
+
+        /* Hide browser UI elements when in PWA mode */
+        .browser-only {
+            display: none;
         }
 
-        /* Mobile-first responsive design */
-        @media (max-width: 768px) {
-            details summary {
-                font-size: 1rem;
-                padding: 6px;
-            }
-            
-            .pdf-container iframe {
-                height: 70vh;
-            }
+        /* Add safe area for notched devices */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    }
+
+    /* Install banner animations */
+    #install-banner {
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translate(-50%, 100%);
+            opacity: 0;
         }
 
-        /* PWA-specific styles */
-        @media (display-mode: standalone) {
-            /* Hide browser UI elements when in PWA mode */
-            .browser-only {
-                display: none;
-            }
-            
-            /* Add safe area for notched devices */
-            body {
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-            }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
         }
+    }
+</style>
+{% include "partials/header.html" %}
 
-        /* Install banner animations */
-        #install-banner {
-            animation: slideUp 0.3s ease-out;
-        }
+<body>
+    <div class="left-content">
+        {% block left_content %}
+        {% endblock left_content %}
+    </div>
 
-        @keyframes slideUp {
-            from {
-                transform: translate(-50%, 100%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-    </style>
-    {% include "partials/header.html" %}
-    <body>
-        <div class="left-content">
-            {% block left_content %}
-            {% endblock left_content %}
-        </div>
+    <div class="content">
+        {% include "partials/nav.html" %}
 
-        <div class="content">
-            {% include "partials/nav.html" %}
+        {# Post page is the default #}
+        {% block main_content %}
+        Nothing here?!
+        {% endblock main_content %}
 
-            {# Post page is the default #}
-            {% block main_content %}
-                Nothing here?!
-            {% endblock main_content %}
+        {% if page.extra.comment is defined %}
+        {% set show_comment = page.extra.comment %}
+        {% else %}
+        {% set show_comment = false %}
+        {% endif %}
 
-            {% if page.extra.comment is defined %}
-                {% set show_comment = page.extra.comment %}
-            {% else %}
-                {% set show_comment = false %}
-            {% endif %}
+        {% if show_comment %}
+        <div class="giscus"></div>
+        {% include "_giscus_script.html" %}
+        {% endif %}
+        <footer>
+            <div style="margin-bottom: 10px;">
+                <a href="javascript:void(0)" onclick="showAnalyticsSettings()"
+                    style="color: #4a90e2; text-decoration: underline;">Privacy Settings</a> |
+                <a href="/privacy-policy" style="text-decoration: underline; color: #4a90e2;">Privacy Policy</a> |
+                <a href="/terms-of-service" style="text-decoration: underline; color: #4a90e2;">Terms of Service</a>
+            </div>
+            <p>Built with ❤️ using <mark><a href="https://getzola.org/"
+                        style="text-decoration: underline;">Zola</a></mark> and <mark><a
+                        href="https://www.getzola.org/themes/apollo/"
+                        style="text-decoration: underline;">Apollo</a></mark></p>
+            <span>&COPY; 2025 Anon</span>
+        </footer>
+    </div>
 
-            {% if show_comment %}
-                <div class="giscus"></div>
-                {% include "_giscus_script.html" %}
-            {% endif %}
-            <footer>
-                <div style="margin-bottom: 10px;">
-                    <a href="javascript:void(0)" onclick="showAnalyticsSettings()" style="color: #4a90e2; text-decoration: underline;">Privacy Settings</a> |
-                    <a href="/privacy-policy" style="text-decoration: underline; color: #4a90e2;">Privacy Policy</a> |
-                    <a href="/terms-of-service" style="text-decoration: underline; color: #4a90e2;">Terms of Service</a> 
-                </div>
-                <p>Built with ❤️ using <mark><a href="https://getzola.org/" style="text-decoration: underline;">Zola</a></mark> and <mark><a href="https://www.getzola.org/themes/apollo/" style="text-decoration: underline;">Apollo</a></mark></p>
-                <span>&COPY; 2025 Anon</span>
-            </footer>
-        </div>
-
-        <div class="right-content">
-            {% block right_content %}
-            {% endblock right_content %}
-        </div>
-        <script>
+    <div class="right-content">
+        {% block right_content %}
+        {% endblock right_content %}
+    </div>
+    <script>
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -111,13 +118,13 @@
 
         // PWA Install Prompt
         let deferredPrompt;
-        
+
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
             // Stash the event so it can be triggered later
             deferredPrompt = e;
-            
+
             // Show install button/banner
             showInstallPrompt();
         });
@@ -162,9 +169,9 @@
                     ">Later</button>
                 </div>
             `;
-            
+
             document.body.appendChild(installBanner);
-            
+
             // Install button click
             document.getElementById('install-button').addEventListener('click', () => {
                 if (deferredPrompt) {
@@ -178,7 +185,7 @@
                     });
                 }
             });
-            
+
             // Dismiss button click
             document.getElementById('dismiss-button').addEventListener('click', () => {
                 document.body.removeChild(installBanner);
@@ -186,15 +193,15 @@
         }
 
         // Handle app installation - Show custom notification
-        window.addEventListener('appinstalled', (evt) => {            
+        window.addEventListener('appinstalled', (evt) => {
             // Show custom success notification
             showSuccessNotification();
-            
+
             // Track installation with PostHog
             if (window.posthog) {
                 posthog.capture('pwa_installed');
             }
-            
+
             // Remove install banner if it still exists
             const installBanner = document.getElementById('install-banner');
             if (installBanner) {
@@ -230,9 +237,9 @@
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(notification);
-            
+
             // Auto-remove after 4 seconds
             setTimeout(() => {
                 notification.style.animation = 'slideUp 0.5s ease-in';
@@ -260,6 +267,179 @@
         `;
         document.head.appendChild(style);
     </script>
-    </body>
+    <script>
+        (function () {
+            const DB_NAME = 'pes_res_index';
+            const DB_VERSION = 1;
+            let ready = false;
+
+            function log(...args) { console.debug('[res-indexer]', ...args); }
+            function warn(...args) { console.warn('[res-indexer]', ...args); }
+            function err(...args) { console.error('[res-indexer]', ...args); }
+
+            function openDB() {
+                return new Promise((resolve, reject) => {
+                    try {
+                        const req = indexedDB.open(DB_NAME, DB_VERSION);
+                        req.onupgradeneeded = e => {
+                            const db = e.target.result;
+                            if (!db.objectStoreNames.contains('resources')) {
+                                const os = db.createObjectStore('resources', { keyPath: 'path' });
+                                os.createIndex('by-added', 'addedAt');
+                                log('DB upgraded: created objectStore resources');
+                            }
+                        };
+                        req.onsuccess = e => {
+                            ready = true;
+                            log('DB opened');
+                            resolve(e.target.result);
+                        };
+                        req.onerror = e => {
+                            err('indexedDB open error', e.target.error);
+                            reject(e.target.error);
+                        };
+                    } catch (e) {
+                        err('openDB exception', e);
+                        reject(e);
+                    }
+                });
+            }
+
+            async function putResource(r) {
+                try {
+                    const db = await openDB();
+                    return new Promise((res, rej) => {
+                        const tx = db.transaction('resources', 'readwrite');
+                        const store = tx.objectStore('resources');
+                        store.put({ path: r.path, title: r.title || '', addedAt: r.addedAt || Date.now() });
+                        tx.oncomplete = () => {
+                            log('putResource OK', r.path);
+                            res();
+                        };
+                        tx.onerror = ev => {
+                            err('putResource tx error', ev.target.error);
+                            rej(ev.target.error);
+                        };
+                    });
+                } catch (e) {
+                    err('putResource error', e);
+                    throw e;
+                }
+            }
+
+            function normalizeLink(href) {
+                try {
+                    const u = new URL(href, location.origin);
+                    // pdf-viewer links -> extract file param
+                    if (u.pathname.startsWith('/pdf-viewer')) {
+                        const p = u.searchParams.get('file') || '';
+                        if (!p) return null;
+                        const dp = decodeURIComponent(p);
+                        return dp.startsWith('/') ? dp.replace(/\/+$/, '') : '/' + dp.replace(/\/+$/, '');
+                    }
+                    // /static/ -> viewer path
+                    if (u.pathname.includes('/static/')) {
+                        const p = u.pathname.replace('/static/', '/');
+                        return decodeURIComponent(p).replace(/\/+$/, '');
+                    }
+                    return null;
+                } catch (e) {
+                    // invalid URL or cross-origin weirdness
+                    return null;
+                }
+            }
+
+            async function indexAllLinks() {
+                try {
+                    if (!('indexedDB' in window)) {
+                        warn('IndexedDB not available in this environment');
+                        return;
+                    }
+                    const anchors = Array.from(document.querySelectorAll('a[href]'));
+                    log('found anchors', anchors.length);
+                    let added = 0;
+                    for (const a of anchors) {
+                        const p = normalizeLink(a.href);
+                        if (p) {
+                            try {
+                                await putResource({ path: p, title: (a.innerText || a.title || p.split('/').pop()), addedAt: Date.now() });
+                                added++;
+                            } catch (e) {
+                                // continue on individual failures
+                                warn('failed to put', p, e);
+                            }
+                        } else {
+                            // Uncomment to debug which links are skipping
+                            // log('skip link', a.href);
+                        }
+                    }
+                    log('indexAllLinks done, added:', added);
+                } catch (e) {
+                    err('indexAllLinks error', e);
+                }
+            }
+
+            // Dump DB contents for debugging
+            async function dumpIndexedResources() {
+                try {
+                    const db = await openDB();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction('resources', 'readonly');
+                        const store = tx.objectStore('resources');
+                        const out = [];
+                        const req = store.openCursor();
+                        req.onsuccess = ev => {
+                            const cur = ev.target.result;
+                            if (!cur) {
+                                log('dumpIndexedResources count', out.length);
+                                resolve(out);
+                                return;
+                            }
+                            out.push(cur.value);
+                            cur.continue();
+                        };
+                        req.onerror = ev => {
+                            err('dump cursor error', ev.target.error);
+                            reject(ev.target.error);
+                        };
+                    });
+                } catch (e) {
+                    err('dumpIndexedResources error', e);
+                    throw e;
+                }
+            }
+
+            // Expose helper funcs for debugging in console
+            window.indexAllLinks = indexAllLinks;
+            window.dumpIndexedResources = dumpIndexedResources;
+
+            // Run once on load and run again on DOM changes
+            document.addEventListener('DOMContentLoaded', () => {
+                log('DOMContentLoaded: running indexAllLinks');
+                indexAllLinks().catch(e => err(e));
+            });
+
+            const mo = new MutationObserver((m) => {
+                // throttle: run after short timeout to batch mutations
+                if (window._pes_indexer_timer) clearTimeout(window._pes_indexer_timer);
+                window._pes_indexer_timer = setTimeout(() => {
+                    log('DOM mutated: re-indexing links');
+                    indexAllLinks().catch(e => err(e));
+                }, 250);
+            });
+            mo.observe(document.body, { childList: true, subtree: true });
+
+            // quick test write to detect blocked IndexedDB (private safari)
+            (async function testWritable() {
+                try {
+                    await putResource({ path: '/__pes_indexer_test', title: 'test', addedAt: Date.now() });
+                    log('IndexedDB write test OK');
+                } catch (e) {
+                    warn('IndexedDB write test failed (maybe private mode or permissions)', e);
+                }
+            })();
+        })();
+    </script>
+</body>
 
 </html>
