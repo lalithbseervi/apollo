@@ -440,6 +440,45 @@
             })();
         })();
     </script>
+    <script>
+    (function(){
+    // Add target="_blank" + secure rel for anchors that should open in new tab
+    function enhanceAnchor(a){
+        if (!a || !a.getAttribute) return;
+        if (!a.hasAttribute('href')) return;
+        // Skip obvious non-navigational or special links
+        const href = a.getAttribute('href') || '';
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+        if (!a.hasAttribute('target')) a.setAttribute('target', '_blank');
+    }
+
+    function processAllLinks(){
+        document.querySelectorAll('a[href]').forEach(enhanceAnchor);
+    }
+
+    // Run on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', processAllLinks);
+    } else {
+        processAllLinks();
+    }
+
+    // Watch for dynamically added links
+    const mo = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+        for (const node of Array.from(m.addedNodes || [])) {
+            if (node.nodeType !== 1) continue;
+            if (node.tagName === 'A') enhanceAnchor(node);
+            node.querySelectorAll && node.querySelectorAll('a[href]').forEach(enhanceAnchor);
+        }
+        }
+    });
+    mo.observe(document.documentElement || document.body, { childList: true, subtree: true });
+
+    // Optional: expose a function to re-run manually in console
+    window.enableBlankLinks = processAllLinks;
+    })();
+    </script>
 </body>
 
 </html>
