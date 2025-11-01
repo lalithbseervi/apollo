@@ -361,6 +361,7 @@
             }
 
             window.indexAllLinks = indexAllLinks;
+            window.putResource = putResource;
             window.dumpIndexedResources = dumpIndexedResources;
 
             document.addEventListener('DOMContentLoaded', () => { indexAllLinks().catch(err); });
