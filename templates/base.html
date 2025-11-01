@@ -57,10 +57,12 @@
         }
     }
 </style>
+{% include "partials/header.html" %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   try {
     if (window.posthog) {
+    //   console.debug('posthog loaded, distinct_id=', posthog.get_distinct_id && posthog.get_distinct_id());
       const sessionData = sessionStorage.getItem('user_session');
       if (sessionData) {
         const session = JSON.parse(sessionData);
@@ -72,13 +74,17 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         }
       }
+    //   try { posthog.capture('_debug_client_loaded'); }
+    //   catch (e) { console.error('posthog.capture failed', e); }
+    }
+    else {
+      console.warn('posthog not found on page (init script missing or blocked)');
     }
   } catch (e) {
     console.error('posthog identify failed', e);
   }
 });
 </script>
-{% include "partials/header.html" %}
 
 <body>
     <div class="left-content">
