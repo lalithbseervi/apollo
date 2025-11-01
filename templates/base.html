@@ -57,6 +57,27 @@
         }
     }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    if (window.posthog) {
+      const sessionData = sessionStorage.getItem('user_session');
+      if (sessionData) {
+        const session = JSON.parse(sessionData);
+        if (session.srn) {
+          posthog.identify(session.srn);
+          posthog.register({
+            srn: session.srn,
+            name: session.profile?.name || null
+          });
+        }
+      }
+    }
+  } catch (e) {
+    console.error('posthog identify failed', e);
+  }
+});
+</script>
 {% include "partials/header.html" %}
 
 <body>
