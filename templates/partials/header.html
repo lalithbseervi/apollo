@@ -39,7 +39,9 @@
     
     <!-- Microsoft Tiles -->
     <meta name="msapplication-TileColor" content="#4a90e2">
-    <script defer   src="{{ get_url(path='js/analytics-preferences.js') }}"></script>
+    <!-- Resource hints: preconnect analytics host to reduce DNS/handshake latency -->
+    <link rel="preconnect" href="https://us.i.posthog.com" crossorigin>
+    <script defer src="{{ get_url(path='js/analytics-preferences.js') }}"></script>
     {% if page.extra.meta %}
         <!-- the meta data config goes here  -->
         {% for data in page.extra.meta %}
@@ -171,7 +173,7 @@
 
     {# Dynamic Note #}
     {% if config.extra.dynamic_note | default(value=false) %}
-        <script src={{ get_url(path="js/note.js") }}></script>
+        <script defer src={{ get_url(path="js/note.js") }}></script>
     {% endif %}
 
     {% if config.extra.mathjax | default(value=false) %}
@@ -236,7 +238,7 @@
     <!-- Set the correct theme in the script -->
 
     {% if theme == "auto" or theme == "toggle" %}
-        <script src={{ get_url(path="js/themetoggle.js") }}></script>
+    <script defer src={{ get_url(path="js/themetoggle.js") }}></script>
 
         {% if theme == "auto" %}
             <script>
@@ -252,14 +254,14 @@
     {% endif %}
 
 
-    <link rel="stylesheet"
-          type="text/css"
-          media="screen"
-          href="{{ get_url(path="main.css") }}" />
+    <!-- Preload critical stylesheet to reduce render-blocking delays -->
+    <link rel="preload" href="{{ get_url(path="main.css") }}" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ get_url(path='main.css') }}"></noscript>
 
     {% if config.extra.stylesheets %}
         {% for stylesheet in config.extra.stylesheets %}
-            <link rel="stylesheet" href="{{ get_url(path=stylesheet) }}">
+            <link rel="preload" href="{{ get_url(path=stylesheet) }}" as="style" onload="this.rel='stylesheet'">
+            <noscript><link rel="stylesheet" href="{{ get_url(path=stylesheet) }}"></noscript>
         {% endfor %}
     {% endif %}
 
