@@ -140,8 +140,57 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch(registrationError => {
                         console.log('SW registration failed: ', registrationError);
                     });
+                
+                        // Ask the service worker to refresh cached assets on every page load.
+                        // This posts a message to the active controller (or waits until ready).
+                        try {
+                            if (navigator.serviceWorker.controller) {
+                                // postMessage returns undefined; don't log its return value.
+                                navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_ON_LOAD' });
+                                console.log('REFRESH_ON_LOAD message posted to active service worker');
+                            } else {
+                                // Wait until the service worker is ready (registration available)
+                                navigator.serviceWorker.ready.then(() => {
+                                    if (navigator.serviceWorker.controller) {
+                                        navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_ON_LOAD' });
+                                        console.log('REFRESH_ON_LOAD message posted to service worker (on ready)');
+                                    } else {
+                                        console.log('No active service worker controller to receive REFRESH_ON_LOAD');
+                                    }
+                                }).catch((e) => console.warn('serviceWorker.ready failed', e));
+                            }
+                        } catch (e) { console.warn('REFRESH_ON_LOAD postMessage failed', e); }
             });
         }
+
+                // Listen for messages from the service worker and log them to the page console
+                if (navigator.serviceWorker) {
+                    navigator.serviceWorker.addEventListener('message', (evt) => {
+                        try {
+                            const d = evt.data || {};
+                            console.log('ServiceWorker -> page message:', d);
+                            if (d && d.type === 'CACHE_REFRESHED') {
+                                console.log(`[SW] CACHE_REFRESHED: refreshed ${d.refreshed}/${d.total} assets`);
+                                // show a small non-blocking toast
+                                // try {
+                                //     const t = document.createElement('div');
+                                //     t.textContent = `Updated ${d.refreshed}/${d.total} cached assets`;
+                                //     t.style.position = 'fixed';
+                                //     t.style.bottom = '12px';
+                                //     t.style.right = '12px';
+                                //     t.style.background = 'rgba(0,0,0,0.8)';
+                                //     t.style.color = '#fff';
+                                //     t.style.padding = '8px 12px';
+                                //     t.style.borderRadius = '6px';
+                                //     t.style.zIndex = 9999;
+                                //     t.style.fontSize = '0.95rem';
+                                //     document.body.appendChild(t);
+                                //     setTimeout(() => { t.style.transition = 'opacity 300ms'; t.style.opacity = '0'; setTimeout(()=>t.remove(), 350); }, 3000);
+                                // } catch (e) { /* ignore UI errors */ }
+                            }
+                        } catch (e) { console.warn('SW message handler error', e); }
+                    });
+                }
 
         // PWA Install Prompt
         let deferredPrompt;
