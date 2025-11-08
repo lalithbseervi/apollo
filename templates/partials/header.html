@@ -238,7 +238,7 @@
     <!-- Set the correct theme in the script -->
 
     {% if theme == "auto" or theme == "toggle" %}
-    <script defer src={{ get_url(path="js/themetoggle.js") }}></script>
+    <script src={{ get_url(path="js/themetoggle.js") }}></script>
 
         {% if theme == "auto" %}
             <script>
