@@ -1,7 +1,4 @@
 {% import "macros/macros.html" as post_macros %}
-{# Macro to add version query param to asset URLs for cache-busting #}
-{% set sw_version = config.extra.sw_version | default(value="0") %}
-{% macro v(path) %}{{ get_url(path=path) }}?v={{ sw_version }}{% endmacro v %}
 
 <head>
     <script>
@@ -59,7 +56,7 @@
     <meta name="msapplication-TileColor" content="#4a90e2">
     <!-- Resource hints: preconnect analytics host to reduce DNS/handshake latency -->
     <link rel="preconnect" href="https://us.i.posthog.com" crossorigin>
-    <script defer src="{{ self::v(path='js/analytics-preferences.js') }}"></script>
+    <script defer src="{{ get_url(path='js/analytics-preferences.js') }}?v={{ config.extra.sw_version | default(value='0') }}"></script>
     {% if page.extra.meta %}
     <!-- the meta data config goes here  -->
     {% for data in page.extra.meta %}
@@ -170,15 +167,15 @@
 
     {# Fancy Codeblock #}
     {% if config.extra.fancy_code %}
-    <script defer src="{{ self::v(path='js/codeblock.js') }}"></script>{% endif %}
+    <script defer src="{{ get_url(path='js/codeblock.js') }}?v={{ config.extra.sw_version | default(value='0') }}"></script>{% endif %}
 
     {# Table of contents #}
     {% if config.extra.toc | default(value=false) %}
-    <script defer src="{{ self::v(path='js/toc.js') }}"></script>{% endif %}
+    <script defer src="{{ get_url(path='js/toc.js') }}?v={{ config.extra.sw_version | default(value='0') }}"></script>{% endif %}
 
     {# Dynamic Note #}
     {% if config.extra.dynamic_note | default(value=false) %}
-        <script defer src="{{ self::v(path='js/note.js') }}"></script>
+        <script defer src="{{ get_url(path='js/note.js') }}?v={{ config.extra.sw_version | default(value='0') }}"></script>
     {% endif %}    {% if config.extra.mathjax | default(value=false) %}
     {% if config.extra.mathjax_dollar_inline_enable | default(value=false) %}
     <script>
@@ -225,7 +222,7 @@
     <!-- Set the correct theme in the script -->
 
     {% if theme == "auto" or theme == "toggle" %}
-    <script src="{{ self::v(path='js/themetoggle.js') }}"></script>
+    <script src="{{ get_url(path='js/themetoggle.js') }}?v={{ config.extra.sw_version | default(value='0') }}"></script>
 
     {% if theme == "auto" %}
     <script>
