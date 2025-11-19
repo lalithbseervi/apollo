@@ -145,7 +145,7 @@
     {% set user = config.extra.analytics.goatcounter.user %}
     {% set host = config.extra.analytics.goatcounter.host | default(value="goatcounter.com") %}
 
-    <script data-goatcounter="https://{{ user }}.{{ host }}/count" async src="{{ get_url(path=" js/count.js")
+    <script data-goatcounter="https://{{ user }}.{{ host }}/count" async src="{{ get_url(path="js/count.js")
         }}"></script>
     <noscript>
         {# EasyList blocks '.com/count?', so we have to use '.com//count' #}
@@ -214,13 +214,13 @@
     {% if theme == "dark" %}
     <link rel="stylesheet" type="text/css" href="{{ get_url(path='theme/dark.css') }}" />
     {% elif theme == "light" %}
-    <link rel="stylesheet" type="text/css" href="{{ get_url(path=" theme/light.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ get_url(path="theme/light.css") }}" />
     {% elif theme == "auto" %}
-    <link rel="stylesheet" type="text/css" href="{{ get_url(path=" theme/light.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ get_url(path="theme/light.css") }}" />
     <link rel="stylesheet" type="text/css" href="{{ get_url(path='theme/dark.css') }}"
         media="(prefers-color-scheme: dark)" />
     {% elif theme == "toggle" %}
-    <link rel="stylesheet" type="text/css" href="{{ get_url(path=" theme/light.css") }}" />
+    <link rel="stylesheet" type="text/css" href="{{ get_url(path="theme/light.css") }}" />
     <link id="darkModeStyle" rel="stylesheet" type="text/css" href="{{ get_url(path='theme/dark.css') }}" />
     {% endif %}
 
@@ -244,7 +244,7 @@
 
 
     <!-- Preload critical stylesheet to reduce render-blocking delays -->
-    <link rel="preload" href="{{ get_url(path=" main.css") }}" as="style" onload="this.rel='stylesheet'">
+    <link rel="preload" href="{{ get_url(path="main.css") }}" as="style" onload="this.rel='stylesheet'">
     <noscript>
         <link rel="stylesheet" href="{{ get_url(path='main.css') }}">
     </noscript>
