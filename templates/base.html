@@ -41,20 +41,10 @@
     }
 
     /* Install banner animations */
-    #install-banner {
-        animation: slideUp 0.3s ease-out;
-    }
-
+    #install-banner { animation: slideUp 0.3s ease-out; }
     @keyframes slideUp {
-        from {
-            transform: translate(-50%, 100%);
-            opacity: 0;
-        }
-
-        to {
-            transform: translate(-50%, 0);
-            opacity: 1;
-        }
+      from { transform: translate(-50%, 100%); opacity:0; }
+      to { transform: translate(-50%, 0); opacity:1; }
     }
 </style>
 {% include "partials/header.html" %}
@@ -94,6 +84,8 @@
         {% block left_content %}
         {% endblock left_content %}
     </div>
+
+
 
     <div class="content">
         {% include "partials/nav.html" %}
@@ -262,7 +254,15 @@
             document.body.appendChild(installBanner);
 
             // Install button click
+            let _pwaInteracted = false;
+            const _autoDismiss = setTimeout(() => {
+                if (!_pwaInteracted && installBanner.parentNode) {
+                    installBanner.parentNode.removeChild(installBanner);
+                }
+            }, 3000);
             document.getElementById('install-button').addEventListener('click', () => {
+                _pwaInteracted = true;
+                clearTimeout(_autoDismiss);
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
                     deferredPrompt.userChoice.then((choiceResult) => {
@@ -277,6 +277,8 @@
 
             // Dismiss button click
             document.getElementById('dismiss-button').addEventListener('click', () => {
+                _pwaInteracted = true;
+                clearTimeout(_autoDismiss);
                 document.body.removeChild(installBanner);
             });
         }
