@@ -132,14 +132,6 @@
                         console.log('SW registration failed: ', registrationError);
                     });
 
-                // When the active controller changes (new SW takes control), reload once to pick up fresh assets
-                let _reloadedForSW = false;
-                navigator.serviceWorker.addEventListener('controllerchange', () => {
-                    if (_reloadedForSW) return;
-                    _reloadedForSW = true;
-                    try { window.location.reload(); } catch (e) { /* ignore */ }
-                });
-
                 // Ask the service worker to refresh cached assets on every page load.
                 // This posts a message to the active controller (or waits until ready).
                 try {
