@@ -344,130 +344,28 @@
         `;
         document.head.appendChild(style);
     </script>
-    <script>
-        (function () {
-            const DB_NAME = 'res_index';
-            const DB_VERSION = 1.1;
-            const DEBUG = eval(window.location.hostname === 'pes-bca.pages.dev');
-            let ready = false;
 
-            const log = (...a) => { if (DEBUG) console.debug('[res-indexer]', ...a); };
-            const warn = (...a) => { if (DEBUG) console.warn('[res-indexer]', ...a); };
-            const err = (...a) => { console.error('[res-indexer]', ...a); }; // keep actual errors visible
+    <!-- Initialize Client-Side Router for smooth navigation -->
+    <script type="module">
+        import Router from '/js/router/index.js?v={{ config.extra.sw_version }}';
+        import { setupRouter } from '/js/router/handlers.js?v={{ config.extra.sw_version }}';
 
-            function openDB() {
-                return new Promise((resolve, reject) => {
-                    try {
-                        const req = indexedDB.open(DB_NAME, DB_VERSION);
-                        req.onupgradeneeded = e => {
-                            const db = e.target.result;
-                            if (!db.objectStoreNames.contains('resources')) {
-                                const os = db.createObjectStore('resources', { keyPath: 'path' });
-                                os.createIndex('by-added', 'addedAt');
-                                log('DB upgraded: created objectStore resources');
-                            }
-                        };
-                        req.onsuccess = e => { ready = true; log('DB opened'); resolve(e.target.result); };
-                        req.onerror = e => { err('indexedDB open error', e.target.error); reject(e.target.error); };
-                    } catch (e) { err('openDB exception', e); reject(e); }
-                });
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initRouter);
+        } else {
+            initRouter();
+        }
+
+        function initRouter() {
+            try {
+                const router = setupRouter(Router);
+                window.appRouter = router;
+                console.log('[CSR Router] Initialized successfully');
+            } catch (error) {
+                console.warn('[CSR Router] Failed to initialize:', error);
+                // Fall back to traditional navigation
             }
-
-            async function putResource(r) {
-                try {
-                    const db = await openDB();
-                    return new Promise((res, rej) => {
-                        const tx = db.transaction('resources', 'readwrite');
-                        const store = tx.objectStore('resources');
-                        store.put({ path: r.path, title: r.title || '', addedAt: r.addedAt || Date.now() });
-                        tx.oncomplete = () => res();
-                        tx.onerror = ev => { err('putResource tx error', ev.target.error); rej(ev.target.error); };
-                    });
-                } catch (e) { err('putResource error', e); throw e; }
-            }
-
-            function normalizeLink(href) {
-                try {
-                    const u = new URL(href, location.origin);
-                    if (u.pathname.startsWith('/pdf-viewer')) {
-                        const p = u.searchParams.get('file') || '';
-                        if (!p) return null;
-                        const dp = decodeURIComponent(p);
-                        return dp.startsWith('/') ? dp.replace(/\/+$/, '') : '/' + dp.replace(/\/+$/, '');
-                    }
-                    if (u.pathname.includes('/static/')) {
-                        const p = u.pathname.replace('/static/', '/');
-                        return decodeURIComponent(p).replace(/\/+$/, '');
-                    }
-                    return null;
-                } catch { return null; }
-            }
-
-            async function indexAllLinks() {
-                if (!('indexedDB' in window)) {
-                    warn('IndexedDB not available');
-                    return;
-                }
-                const anchors = Array.from(document.querySelectorAll('a[href]'));
-                let added = 0;
-                for (const a of anchors) {
-                    const p = normalizeLink(a.href);
-                    if (p) {
-                        try { await putResource({ path: p, title: (a.innerText || a.title || p.split('/').pop()), addedAt: Date.now() }); added++; }
-                        catch (e) { warn('failed to put', p, e); }
-                    }
-                }
-                if (DEBUG) log('indexAllLinks done, added:', added);
-            }
-
-            async function dumpIndexedResources() {
-                const db = await openDB();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('resources', 'readonly');
-                    const store = tx.objectStore('resources');
-                    const out = [];
-                    const req = store.openCursor();
-                    req.onsuccess = ev => {
-                        const cur = ev.target.result;
-                        if (!cur) return resolve(out);
-                        out.push(cur.value);
-                        cur.continue();
-                    };
-                    req.onerror = ev => reject(ev.target.error);
-                });
-            }
-
-            window.indexAllLinks = indexAllLinks;
-            window.putResource = putResource;
-            window.dumpIndexedResources = dumpIndexedResources;
-
-            document.addEventListener('DOMContentLoaded', () => { indexAllLinks().catch(err); });
-
-            const mo = new MutationObserver(() => {
-                clearTimeout(window._pes_indexer_timer);
-                window._pes_indexer_timer = setTimeout(() => { indexAllLinks().catch(err); }, 250);
-            });
-            mo.observe(document.body, { childList: true, subtree: true });
-
-            // Expose helper to query resources by prefix
-            async function getResourcesWithPrefix(prefix) {
-                const db = await openDB();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('resources', 'readonly');
-                    const store = tx.objectStore('resources');
-                    const out = [];
-                    const req = store.openCursor();
-                    req.onsuccess = evt => {
-                        const cur = evt.target.result;
-                        if (!cur) return resolve(out);
-                        const p = cur.value.path;
-                        if (p.startsWith(prefix)) out.push(cur.value);
-                        cur.continue();
-                    };
-                    req.onerror = ev => reject(ev.target.error);
-                });
-            }
-        })
+        }
     </script>
 </body>
 
