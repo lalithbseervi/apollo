@@ -426,27 +426,7 @@
     </script>
 
     <!-- Initialize Client-Side Router for smooth navigation -->
-    <script type="module">
-        import Router from '/js/router/index.js?v={{ config.extra.sw_version }}';
-        import { setupRouter } from '/js/router/handlers.js?v={{ config.extra.sw_version }}';
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initRouter);
-        } else {
-            initRouter();
-        }
-
-        function initRouter() {
-            try {
-                const router = setupRouter(Router);
-                window.appRouter = router;
-                console.log('[CSR Router] Initialized successfully');
-            } catch (error) {
-                console.warn('[CSR Router] Failed to initialize:', error);
-                // Fall back to traditional navigation
-            }
-        }
-    </script>
+    <script type="module" src="/js/router/init.js?v={{ config.extra.sw_version }}"></script>
 </body>
 
 </html>
