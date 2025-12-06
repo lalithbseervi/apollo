@@ -7,6 +7,10 @@
         font-size: small;
     }
 
+    body {
+        padding-left: 78px;
+    }
+
     /* Mobile-first responsive design */
     @media (max-width: 768px) {
         details summary {
@@ -32,6 +36,62 @@
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
+    }
+
+    /* Desktop sidebar nav */
+    .sidebar-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 68px;
+        background: linear-gradient(180deg, #111827 0%, #0b1220 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 14px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        box-shadow: 6px 0 18px rgba(0, 0, 0, 0.25);
+        z-index: 50;
+    }
+    .sidebar-nav .nav-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 48px;
+        border-radius: 12px;
+        color: #d1d5db;
+        text-decoration: none;
+        font-size: 0.95rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: all 0.18s ease;
+    }
+    .sidebar-nav .nav-item:hover {
+        color: #fff;
+        border-color: rgba(16, 185, 129, 0.45);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.18);
+    }
+    .sidebar-nav .nav-item.active {
+        color: #0f172a;
+        background: #10b981;
+        border-color: #10b981;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        font-weight: 700;
+    }
+    .sidebar-nav .nav-icon {
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .sidebar-nav .nav-spacer {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+    @media (max-width: 900px) {
+        .sidebar-nav { display: none; }
+        body { padding-left: 0; }
     }
 
     /* Install banner animations */
@@ -343,6 +403,26 @@
             }
         `;
         document.head.appendChild(style);
+    </script>
+
+    <script>
+        // Highlight the active sidebar item based on current path
+        (function() {
+            const path = window.location.pathname;
+            document.querySelectorAll('#sidebar-nav .nav-item').forEach((item) => {
+                const pattern = item.getAttribute('data-match');
+                if (pattern) {
+                    try {
+                        const regex = new RegExp(pattern);
+                        if (regex.test(path)) {
+                            item.classList.add('active');
+                        }
+                    } catch (e) {
+                        /* ignore invalid patterns */
+                    }
+                }
+            });
+        })();
     </script>
 
     <!-- Initialize Client-Side Router for smooth navigation -->

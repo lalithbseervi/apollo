@@ -21,7 +21,7 @@
 
     <div class="right-nav">
         {% for menu in config.extra.menu %}
-            <a href={{ get_url(path=menu.url) }} style="margin-right: 0.5em">{{ menu.name }}</a>
+            <a href={{ get_url(path=menu.url) }} class="nav-link" data-path="{{ menu.url }}">{{ menu.name }}</a>
         {% endfor %}
 
         {% if config.build_search_index %}
@@ -81,3 +81,16 @@
         {% endif %}
     </div>
 </nav>
+
+<script>
+    // Highlight active navigation link based on current path
+    (function() {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach((link) => {
+            const linkPath = link.getAttribute('data-path');
+            if (linkPath && currentPath.startsWith(linkPath)) {
+                link.classList.add('active');
+            }
+        });
+    })();
+</script>

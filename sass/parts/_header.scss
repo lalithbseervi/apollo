@@ -64,6 +64,33 @@ nav {
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;
+        gap: 0.5rem;
+
+        .nav-link {
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            color: var(--fg-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.18s ease;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+
+            &:hover {
+                background: rgba(16, 185, 129, 0.08);
+                border-color: rgba(16, 185, 129, 0.3);
+                color: #10b981;
+            }
+
+            &.active {
+                background: #10b981;
+                color: #0f172a;
+                border-color: #10b981;
+                font-weight: 700;
+                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+            }
+        }
 
         #dark-mode-toggle {
             margin-left: 0.5rem;
