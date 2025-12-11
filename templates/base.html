@@ -100,6 +100,12 @@
       from { transform: translate(-50%, 100%); opacity:0; }
       to { transform: translate(-50%, 0); opacity:1; }
     }
+
+    /* Hide hamburger menu when login modal is active */
+    #login-modal[style*="display: block"] ~ .content nav .menu-toggle,
+    body:has(#login-modal[style*="display: block"]) nav .menu-toggle {
+        display: none !important;
+    }
 </style>
 {% include "partials/header.html" %}
 <script type="module" src="/js/auth.js?v={{ config.extra.sw_version }}"></script>

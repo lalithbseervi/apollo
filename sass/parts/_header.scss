@@ -21,11 +21,58 @@ nav {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
     padding: 0;
+    position: relative;
+    width: 100%; // Ensure nav takes full width
+
+    // Desktop: No top nav, using sidebar instead
+    @media (min-width: 769px) {
+        padding: 0;
+        margin-bottom: 0;
+    }
 
     /* Mobile-specific adjustments */
-    @media (max-width: 600px) {
-        flex-direction: column;
+    @media (max-width: 768px) {
+        padding: 0.5rem 0;
+        flex-wrap: nowrap; // Prevent wrapping that might push gear icon down
+    }
+
+    /* Desktop-only elements */
+    .desktop-only {
+        @media (max-width: 768px) {
+            display: none !important;
+        }
+    }
+
+    /* Menu toggle button (gear icon on mobile) */
+    .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 1001;
+        order: 3; // Ensure it appears after left-nav and right-nav
+
+        @media (max-width: 768px) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            position: relative; // Remove any absolute positioning issues
+        }
+
+        svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-0);
+            transition: transform 0.3s ease;
+        }
+
+        &.active svg {
+            transform: rotate(90deg);
+        }
     }
 
     /* title and socials */
@@ -36,6 +83,16 @@ nav {
       gap: 12px;
       font-size: 1.5rem;
 
+      @media (max-width: 768px) {
+          font-size: 1.25rem;
+          gap: 8px;
+          flex: 1;
+      }
+
+      a:not(.social) {
+          font-weight: 600;
+      }
+
       .socials {
         /* flex-container */
         display: flex;
@@ -45,10 +102,18 @@ nav {
         align-items: flex-end;
         gap: 6px;
 
+        @media (max-width: 768px) {
+            gap: 4px;
+        }
+
         .social img {
           width: 16px;
           height: 16px;
 
+          @media (max-width: 768px) {
+              width: 14px;
+              height: 14px;
+          }
         }
 
         /* Don't display background on hover */
@@ -66,6 +131,62 @@ nav {
         align-items: center;
         gap: 0.5rem;
 
+        // Desktop: Vertical collapsible sidebar
+        @media (min-width: 769px) {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 60px; // Collapsed width (icon only)
+            background: var(--bg-0);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.5rem 0;
+            gap: 0.25rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: width 0.3s ease;
+
+            &:hover {
+                width: 240px; // Expanded width
+                
+                .nav-link span {
+                    opacity: 1;
+                    max-width: 200px;
+                }
+                
+                .search-button::after,
+                #dark-mode-toggle::after {
+                    opacity: 1;
+                    max-width: 100px;
+                }
+            }
+        }
+
+        @media (max-width: 768px) {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            height: 100vh;
+            width: 280px;
+            max-width: 85vw;
+            background: var(--bg-0);
+            flex-direction: column;
+            align-items: stretch;
+            padding: 6rem 1.5rem 2rem; // Increased top padding to avoid gear icon overlap
+            gap: 0.75rem;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+
+            &.active {
+                right: 0;
+            }
+        }
+
         .nav-link {
             padding: 0.4rem 0.75rem;
             border-radius: 6px;
@@ -76,29 +197,160 @@ nav {
             transition: all 0.18s ease;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            // Desktop: Vertical sidebar styling
+            @media (min-width: 769px) {
+                padding: 0.65rem;
+                font-size: 0.875rem;
+                white-space: nowrap;
+                justify-content: center;
+                margin: 0.125rem 0.5rem;
+                background: transparent;
+                border: none;
+                
+                svg {
+                    width: 20px;
+                    height: 20px;
+                    flex-shrink: 0;
+                    min-width: 20px;
+                    opacity: 0.85;
+                    transition: opacity 0.2s ease;
+                }
+
+                span {
+                    opacity: 0;
+                    max-width: 0;
+                    overflow: hidden;
+                    transition: opacity 0.3s ease, max-width 0.3s ease;
+                }
+
+                &:hover {
+                    background: rgba(16, 185, 129, 0.08);
+                    border-radius: 6px;
+                    justify-content: flex-start;
+                    
+                    svg {
+                        opacity: 1;
+                    }
+                }
+
+                &.active {
+                    background: #10b981;
+                    color: #0f172a;
+                    font-weight: 700;
+                    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+                    border-radius: 6px;
+
+                    svg {
+                        stroke: #0f172a;
+                        opacity: 1;
+                    }
+                }
+            }
+
+            // For button elements styled as nav-link
+            &[type="button"] {
+                cursor: pointer;
+            }
+
+            svg {
+                width: 16px;
+                height: 16px;
+                flex-shrink: 0;
+                min-width: 16px; // Ensures consistent icon space
+            }
+
+            @media (max-width: 768px) {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                justify-content: flex-start;
+                gap: 0.75rem;
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                    min-width: 20px; // Ensures consistent icon space on mobile
+                }
+
+                span {
+                    text-align: left;
+                    flex: 1;
+                }
+            }
 
             &:hover {
                 background: rgba(16, 185, 129, 0.08);
                 border-color: rgba(16, 185, 129, 0.3);
                 color: #10b981;
+
+                svg {
+                    stroke: #10b981;
+                }
             }
 
             &.active {
-                background: #10b981;
-                color: #0f172a;
-                border-color: #10b981;
-                font-weight: 700;
-                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+                @media (max-width: 768px) {
+                    background: #10b981;
+                    color: #0f172a;
+                    border-color: #10b981;
+                    font-weight: 700;
+                    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+
+                    svg {
+                        stroke: #0f172a;
+                    }
+                }
             }
         }
 
         #dark-mode-toggle {
-            margin-left: 0.5rem;
+            margin-left: 0;
             padding: 0.1rem;
+
+            @media (min-width: 769px) {
+                margin: 0.5rem 0.5rem 0;
+                width: auto;
+                padding: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                > img {
+                    width: 20px;
+                    height: 20px;
+                    flex-shrink: 0;
+                }
+
+                // Add text label that appears on hover
+                &::after {
+                    content: 'Theme';
+                    font-size: 0.875rem;
+                    white-space: nowrap;
+                    opacity: 0;
+                    max-width: 0;
+                    overflow: hidden;
+                    transition: opacity 0.3s ease, max-width 0.3s ease;
+                }
+            }
+
+            @media (max-width: 768px) {
+                margin: 1rem auto 0;
+                padding: 0.5rem;
+                display: flex;
+                justify-content: center;
+            }
 
             > img {
                 width: 16px;
                 height: 16px;
+
+                @media (max-width: 768px) {
+                    width: 20px;
+                    height: 20px;
+                }
             }
 
             /* Don't display background on hover */
@@ -106,6 +358,30 @@ nav {
                 background-color: transparent;
             }
         }
+    }
+
+    /* Overlay for mobile menu */
+    &::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 999;
+        
+        @media (min-width: 769px) {
+            display: none;
+        }
+    }
+
+    &.menu-open::before {
+        opacity: 1;
+        visibility: visible;
     }
 }
 
