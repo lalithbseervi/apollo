@@ -108,6 +108,7 @@
     }
 </style>
 {% include "partials/header.html" %}
+<script type="module" src="/js/system-notifications.js?v={{ config.extra.sw_version }}"></script>
 <script type="module" src="/js/auth.js?v={{ config.extra.sw_version }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -132,10 +133,10 @@
                 //   catch (e) { console.error('posthog.capture failed', e); }
             }
             else {
-                console.warn('posthog not found on page (init script missing or blocked)');
+                // posthog not initialized
             }
         } catch (e) {
-            console.error('posthog identify failed', e);
+            // posthog initialization failed - non-critical
         }
     });
 </script>
@@ -193,10 +194,10 @@
                 const swVersion = '{{ config.extra.sw_version | default(value="0") }}';
                 navigator.serviceWorker.register(`/sw.js?v=${swVersion}`, { scope: '/' })
                     .then(registration => {
-                        console.log('SW registered: ', registration);
+                        // Service worker registered successfully
                     })
                     .catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
+                        // Service worker registration failed - likely offline or blocked
                     });
 
                 // Ask the service worker to refresh cached assets on every page load.
@@ -205,19 +206,15 @@
                     if (navigator.serviceWorker.controller) {
                         // postMessage returns undefined; don't log its return value.
                         navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_ON_LOAD' });
-                        console.log('REFRESH_ON_LOAD message posted to active service worker');
                     } else {
                         // Wait until the service worker is ready (registration available)
                         navigator.serviceWorker.ready.then(() => {
                             if (navigator.serviceWorker.controller) {
                                 navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_ON_LOAD' });
-                                console.log('REFRESH_ON_LOAD message posted to service worker (on ready)');
-                            } else {
-                                console.log('No active service worker controller to receive REFRESH_ON_LOAD');
                             }
-                        }).catch((e) => console.warn('serviceWorker.ready failed', e));
+                        }).catch((e) => { /* serviceWorker.ready failed */ });
                     }
-                } catch (e) { console.warn('REFRESH_ON_LOAD postMessage failed', e); }
+                } catch (e) { /* REFRESH_ON_LOAD postMessage failed */ }
             });
         }
 
@@ -226,9 +223,7 @@
             navigator.serviceWorker.addEventListener('message', (evt) => {
                 try {
                     const d = evt.data || {};
-                    console.log('ServiceWorker -> page message:', d);
                     if (d && d.type === 'CACHE_REFRESHED') {
-                        console.log(`[SW] CACHE_REFRESHED: refreshed ${d.refreshed}/${d.total} assets`);
                         // show a small non-blocking toast
                         // try {
                         //     const t = document.createElement('div');
@@ -246,7 +241,7 @@
                         //     setTimeout(() => { t.style.transition = 'opacity 300ms'; t.style.opacity = '0'; setTimeout(()=>t.remove(), 350); }, 3000);
                         // } catch (e) { /* ignore UI errors */ }
                     }
-                } catch (e) { console.warn('SW message handler error', e); }
+                } catch (e) { /* SW message handler error */ }
             });
         }
 
@@ -320,7 +315,7 @@
                     deferredPrompt.prompt();
                     deferredPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted the install prompt');
+                            // User accepted the install prompt
                         }
                         deferredPrompt = null;
                         document.body.removeChild(installBanner);
