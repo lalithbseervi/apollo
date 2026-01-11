@@ -3,6 +3,19 @@
 <!DOCTYPE html>
 <html lang="en" class="dark light">
 <style>
+    #notice {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-family: sans-serif;
+        z-index: 9999;
+    }
+
     span {
         font-size: small;
     }
@@ -55,6 +68,7 @@
         box-shadow: 6px 0 18px rgba(0, 0, 0, 0.25);
         z-index: 50;
     }
+
     .sidebar-nav .nav-item {
         width: 100%;
         display: flex;
@@ -69,11 +83,13 @@
         border: 1px solid rgba(255, 255, 255, 0.06);
         transition: all 0.18s ease;
     }
+
     .sidebar-nav .nav-item:hover {
         color: #fff;
         border-color: rgba(16, 185, 129, 0.45);
         box-shadow: 0 6px 20px rgba(16, 185, 129, 0.18);
     }
+
     .sidebar-nav .nav-item.active {
         color: #0f172a;
         background: #10b981;
@@ -81,28 +97,46 @@
         box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
         font-weight: 700;
     }
+
     .sidebar-nav .nav-icon {
         font-size: 1.25rem;
         line-height: 1;
     }
+
     .sidebar-nav .nav-spacer {
         flex: 1 1 auto;
         width: 100%;
     }
+
     @media (max-width: 900px) {
-        .sidebar-nav { display: none; }
-        body { padding-left: 0; }
+        .sidebar-nav {
+            display: none;
+        }
+
+        body {
+            padding-left: 0;
+        }
     }
 
     /* Install banner animations */
-    #install-banner { animation: slideUp 0.3s ease-out; }
+    #install-banner {
+        animation: slideUp 0.3s ease-out;
+    }
+
     @keyframes slideUp {
-      from { transform: translate(-50%, 100%); opacity:0; }
-      to { transform: translate(-50%, 0); opacity:1; }
+        from {
+            transform: translate(-50%, 100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
     }
 
     /* Hide hamburger menu when login modal is active */
-    #login-modal[style*="display: block"] ~ .content nav .menu-toggle,
+    #login-modal[style*="display: block"]~.content nav .menu-toggle,
     body:has(#login-modal[style*="display: block"]) nav .menu-toggle {
         display: none !important;
     }
@@ -150,6 +184,17 @@
 
 
     <div class="content">
+        <div id="notice">
+            This site has been moved to another domain (lmsu.vercel.app)
+            Redirecting in 3 seconds...
+        </div>
+
+        <script>
+            setTimeout(() => {
+                document.getElementById('notice')?.remove();
+                window.location.replace('https://lmsu.vercel.app/');
+            }, 3000);
+        </script>
         {% include "partials/nav.html" %}
 
         {# Post page is the default #}
@@ -174,10 +219,8 @@
                 <a href="/privacy-policy" style="text-decoration: underline; ">Privacy Policy</a> |
                 <a href="/terms-of-service" style="text-decoration: underline; ">Terms of Service</a>
             </div>
-            <p>Built with ❤️ using <a href="https://getzola.org/"
-                        style="text-decoration: underline;">Zola</a> and <a
-                        href="https://www.getzola.org/themes/apollo/"
-                        style="text-decoration: underline;">Apollo</a></p>
+            <p>Built with ❤️ using <a href="https://getzola.org/" style="text-decoration: underline;">Zola</a> and <a
+                    href="https://www.getzola.org/themes/apollo/" style="text-decoration: underline;">Apollo</a></p>
             <span>&COPY; 2025 Anon</span>
         </footer>
     </div>
@@ -409,7 +452,7 @@
 
     <script>
         // Highlight the active sidebar item based on current path
-        (function() {
+        (function () {
             const path = window.location.pathname;
             document.querySelectorAll('#sidebar-nav .nav-item').forEach((item) => {
                 const pattern = item.getAttribute('data-match');
